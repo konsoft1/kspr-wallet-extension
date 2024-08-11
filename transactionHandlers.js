@@ -23,7 +23,11 @@ export async function sendKas() {
         await initKaspa();
 
         const sessionData = await getSessionData();
-        const selectedAccount = sessionData.accounts[document.getElementById('accountSelector').selectedIndex];
+        /**
+         * Roni
+         */
+        //const selectedAccount = sessionData.accounts[document.getElementById('accountSelector').selectedIndex];
+        const selectedAccount = sessionData.accounts[document.getElementById('accountChoosed').data];
         const privateKey = new PrivateKey(selectedAccount.privateKey);
         const sourceAddress = privateKey.toKeypair().toAddress(sessionData.network);
         const destinationAddress = new Address(recipientAddress);

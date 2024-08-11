@@ -1,5 +1,5 @@
 import { rpcClient, getSessionData, reloadAccounts, setSessionData } from './kaspaUtils.js';
-import { showToast, showModal } from './uiUtils.js';
+import { showToast, showModal, showPromptModal } from './uiUtils.js';
 import { decryptData } from './cryptoUtils.js';
 
 const API_MAINNET = 'https://api.kasplex.org/v1';
@@ -124,40 +124,70 @@ export async function displayAccountDetails(account) {
     }
 }
 
+/**
+ * Roni
+ */
 export function populateAccountSelector(accounts) {
-    const accountSelector = document.getElementById('accountSelector');
-    accountSelector.innerHTML = accounts.map((account, index) => `<option value="${index}">${account.name}</option>`).join('');
+    /* const accountSelector = document.getElementById('accountSelector');
+    accountSelector.innerHTML = accounts.map((account, index) => `<option value="${index}">${account.name}</option>`).join(''); */
+    const accountChooseList = document.getElementById('accountChooseList');
+    accountChooseList.innerHTML = accounts.map((account, index) => `<li><a class="dropdown-item" href="">${account.name}</a></li>`).join('');
+    const accountChooseItems = document.querySelectorAll('#accountChooseList li a');
+    accountChooseItems.forEach((item, index) => {
+        item.addEventListener('click', async function (event) {
+            switchAccount(index);
+        });
+    });
 }
 
-export async function switchAccount() {
-    const sessionData = await getSessionData();
+/**
+ * Roni
+ */
+export async function switchAccount(selectedIndex) {
+    /* const sessionData = await getSessionData();
     const accountSelector = document.getElementById('accountSelector');
     const selectedAccount = sessionData.accounts[accountSelector.selectedIndex];
     const currentAccountNumberElement = document.getElementById('current-account-number');
     currentAccountNumberElement.textContent = `Account #${accountSelector.selectedIndex + 1}`;
     displayAccountDetails(selectedAccount);
-    await setSessionData({ currentAccountSelected: accountSelector.selectedIndex + 1 });
+    await setSessionData({ currentAccountSelected: accountSelector.selectedIndex + 1 }); */
+
+    const sessionData = await getSessionData();
+    const selectedAccount = sessionData.accounts[selectedIndex];
+    const accountChoosed = document.getElementById('accountChoosed');
+    accountChoosed.innerText = selectedAccount
+    accountChoosed.data = selectedIndex;
+    const currentAccountNumberElement = document.getElementById('current-account-number');
+    currentAccountNumberElement.textContent = `Account #${selectedIndex + 1}`;
+    displayAccountDetails(selectedAccount);
+    await setSessionData({ currentAccountSelected: selectedIndex + 1 });
 }
 
 export async function createNewAccount() {
     try {
         const sessionData = await getSessionData();
         let accountLength = sessionData.accounts.length || 0;
-        
+
         accountLength += 1;
 
-        if(accountLength <= 25){
+        if (accountLength <= 25) {
             localStorage.setItem('accountLength', accountLength);
             await reloadAccounts();
             const newSessionData = await getSessionData();
             populateAccountSelector(newSessionData.accounts);
-            displayAccountDetails(newSessionData.accounts[accountLength-1]);
-            const accountSelector = document.getElementById('accountSelector');
-            accountSelector.selectedIndex = accountLength - 1;
+            displayAccountDetails(newSessionData.accounts[accountLength - 1]);
+            /**
+             * Roni
+             */
+            /* const accountSelector = document.getElementById('accountSelector');
+            accountSelector.selectedIndex = accountLength - 1; */
+            const accountChoosed = document.getElementById('accountChoosed');
+            accountChoosed.innerText = newSessionData.accounts[accountLength - 1].name;
+            accountChoosed.data = accountLength - 1;
             await setSessionData({ currentAccountSelected: accountLength });
-    
+
             showToast(`Account #${accountLength} created with success`, "success");
-        } else{
+        } else {
             showToast("25 accounts max per wallet", "error");
         }
     } catch (error) {
@@ -168,11 +198,19 @@ export async function createNewAccount() {
 
 export async function exportPrivateKey() {
     try {
-        const password = prompt("Enter your wallet password:");
+        /**
+         * Roni
+         */
+        const password = await showPromptModal('Enter your wallet password:');
+        if (password === null) {
+            return;
+        }
+        /* const password = prompt("Enter your wallet password:");
         if (!password) {
             showToast("Password is required!", "error");
             return;
-        }
+        } */
+
         const encryptedSeed = JSON.parse(localStorage.getItem('encryptedSeed'));
         await decryptData(password, encryptedSeed);
         const sessionData = await getSessionData();

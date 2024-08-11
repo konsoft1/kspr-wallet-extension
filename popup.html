@@ -1,98 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>KSPR Wallet</title>
-    <link rel="stylesheet" href="styles/popup.css">
-    <script type="module" src="popup.js" defer></script>
+  <meta charset="UTF-8" />
+  <title>KSPR Wallet</title>
+  <link rel="stylesheet" href="styles/popup.css" />
+  <script type="module" src="popup.js" defer></script>
 </head>
+
 <body>
-    <h1>KSPR Wallet</h1>
+  <div style="
+        position: absolute;
+        top: 40px;
+        left: 30px;
+        background: linear-gradient(to top left, rgb(0 0 0), rgb(88 90 95));
+        width: 360px;
+        z-index: -1;
+        text-align: center;
+        border-radius: 14px;
+        line-height: 18px;
+        padding: 0;
+        height: 230px;
+        box-shadow: rgb(0 0 0 / 26%) 10px 10px 30px 0px,
+          rgb(197 197 197 / 13%) -6px -6px 6px 0px, inset #717171 1px 1px 0px 0 !important;
+      ">
+    <span style="
+      background: linear-gradient(to top left, rgb(209 207 214), rgb(138 140 147));
+      border-top-left-radius: 3px;
+      border-bottom-left-radius: 3px;
+      position: absolute;
+      right: 0;
+      top: 11px;
+      width: 84px;
+      height: 39px;
+      display: none;
+    "></span>
+    <img src="icons/icon48.png" alt="Settings" style="width: 36px; position: absolute; right: 24px; top: 12px" />
+    <h1 style="
+          color: #e9eff3;
+          display: inline-block;
+          position: absolute;
+          left: 40px;
+          top: 5px;
+          /* font-style: italic; */
+          font-size: 20px;
+        ">
+      KSPR Wallet
+    </h1>
+    <img src="icons/card_pin.png" alt="Settings" style="width: 65px; position: absolute; left: 50px; top: 59px" />
+  </div>
+  <div class="container">
+    <button class="close-button" id="close-overlay">×</button>
 
     <div id="toast-container"></div>
 
-    <div>
-        <label for="network">Selected Network:</label>
-        <select id="network">
-            <option value="testnet-11">Testnet</option>
-            <option value="mainnet">Mainnet</option>
-        </select>
-    </div>
-
     <div id="screen-initial" class="screen">
-        <button id="createWallet">Create Wallet</button>
-        <button id="importWallet">Import Wallet</button>
+      <button id="createWallet">Create Wallet</button>
+      <button id="importWallet">Import Wallet</button>
     </div>
 
     <div id="screen-unlock-wallet" class="screen">
-        <input type="password" id="unlockPassword" placeholder="Enter your password">
-        <button id="unlockWallet">Unlock Wallet</button>
-        <a href="#" id="forgetPassword">Forgot Password?</a>
+      <input type="password" id="unlockPassword" placeholder="Enter your password" />
+      <button id="unlockWallet">Unlock Wallet</button>
+      <a href="#" id="forgetPassword">Forgot Password?</a>
     </div>
 
     <div id="screen-show-mnemonic" class="screen">
-        <p>Please save the following 12 words:</p>
-        <div id="mnemonicWords" class="mnemonic"></div>
-        <button id="confirmSavedWords">I saved my words</button>
+      <p>Please save the following 12 words:</p>
+      <div id="mnemonicWords" class="mnemonic"></div>
+      <button id="confirmSavedWords">I saved my words</button>
     </div>
 
     <div id="screen-confirm-mnemonic" class="screen">
-        <p>Enter the 12 words to confirm:</p>
-        <textarea id="confirmMnemonic" rows="3" placeholder="Enter the 12 words"></textarea>
-        <button id="confirmMnemonicButton">Confirm</button>
+      <p>Enter the 12 words to confirm:</p>
+      <textarea id="confirmMnemonic" rows="3" placeholder="Enter the 12 words"></textarea>
+      <button id="confirmMnemonicButton">Confirm</button>
     </div>
 
     <div id="screen-reset-wallet" class="screen">
-        <p>Enter your 12 or 24 words mnemonic to reset the wallet:</p>
-        <textarea id="resetMnemonic" rows="3" placeholder="Enter the 12 or 24 words"></textarea>
-        <button id="resetWalletButton">Reset Wallet</button>
+      <p>Enter your 12 or 24 words mnemonic to reset the wallet:</p>
+      <textarea id="resetMnemonic" rows="3" placeholder="Enter the 12 or 24 words"></textarea>
+      <button id="resetWalletButton">Reset Wallet</button>
     </div>
 
     <div id="screen-import-wallet" class="screen">
-        <p>Enter your 12 or 24 words mnemonic to import the wallet:</p>
-        <textarea id="importMnemonic" rows="3" placeholder="Enter the 12 or 24 words"></textarea>
-        <button id="importWalletButton">Import Wallet</button>
+      <p>Enter your 12 or 24 words mnemonic to import the wallet:</p>
+      <textarea id="importMnemonic" rows="3" placeholder="Enter the 12 or 24 words"></textarea>
+      <button id="importWalletButton">Import Wallet</button>
     </div>
 
     <div id="screen-wallet" class="screen">
-        <div class="header">
-            <div class="account-selector-wrapper">
-                <select id="accountSelector"></select>
-                <div class="account-options">
-                    <img src="icons/gear.png" alt="Settings">
-                    <div class="account-options-content">
-                        <a href="#" id="createNewAccount">Create New Account</a>
-                        <a href="#" id="exportAccountPrivateKey">Export the <span id="current-account-number"></span> Private Key</a>
-                        <a href="#" id="resetWallet">Reset Wallet with another Seed</a>
-                        <a href="#" id="exportWalletSeed">Export Wallet Seed</a>
-                        <a href="#" id="logout">Lock Wallet</a>
-                    </div>
-                </div>
+      <div class="header">
+        <li id="accountChooser" class="nav-item dropdown">
+          <a href="#" class="nav-link" data-toggle="dropdown" role="button">
+            <span id="accountChoosed" class="nav-link-inner-text" data="0">Account #1</span>
+            <span class="nav-link-arrow">&gt;</span>
+          </a>
+          <ul id="accountChooseList" class="dropdown-menu">
+            <!-- <li><a class="dropdown-item" href="">Account #1</a></li> -->
+          </ul>
+        </li>
+        <li class="nav-item dropdown account-options">
+          <a href="#" class="nav-link" data-toggle="dropdown" role="button">
+            <div class="hamburger-menu">
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line"></div>
             </div>
+          </a>
+          <ul class="dropdown-menu account-options-content">
+            <li><a href="#" id="createNewAccount">Create New Account</a></li>
+            <li><a href="#" id="exportAccountPrivateKey">Export the <span id="current-account-number"></span> Private
+                Key</a></li>
+            <li><a href="#" id="resetWallet">Reset Wallet with another Seed</a></li>
+            <li><a href="#" id="exportWalletSeed">Export Wallet Seed</a></li>
+            <li><a href="#" id="logout">Lock Wallet</a></li>
+          </ul>
+        </li>
+        <div class="account-selector-wrapper" style="display: none;">
+          <select id="accountSelector"></select>
+          <div class="account-options">
+            <img src="icons/gear.png" alt="Settings" />
+            <div class="account-options-content">
+              <a href="#" id="createNewAccount">Create New Account</a>
+              <a href="#" id="exportAccountPrivateKey">Export the <span id="current-account-number"></span> Private
+                Key</a>
+              <a href="#" id="resetWallet">Reset Wallet with another Seed</a>
+              <a href="#" id="exportWalletSeed">Export Wallet Seed</a>
+              <a href="#" id="logout">Lock Wallet</a>
+            </div>
+          </div>
         </div>
-        <div class="account-info">
-            <span id="accountAddress"></span>
-            <button id="copyAddressButton">Copy Address</button>
-        </div>
-        <div id="accountDetails"></div>
-        <hr />
-        <div class="send-kas">
-            <h2>Send KAS</h2>
-            <input type="text" id="recipientAddress" placeholder="Recipient Address">
-            <input type="text" id="sendAmount" placeholder="Amount">
-            <input type="text" id="priorityFeeKas" placeholder="Priority Fee">
-            <button id="sendKasButton">Send</button>
-        </div>
+      </div>
+      <div class="account-info">
+        <span id="accountAddress"></span>
+        <span class="tooltip">Click to copy</span>
+        <!-- <button id="copyAddressButton">Copy Address</button> -->
+      </div>
+      <div id="accountDetails"></div>
+      <hr />
+      <div class="send-kas">
+        <h2>Send KAS</h2>
+        <input type="text" id="recipientAddress" placeholder="Recipient Address" />
+        <input type="text" id="sendAmount" placeholder="Amount" />
+        <input type="text" id="priorityFeeKas" placeholder="Priority Fee" />
+        <button id="sendKasButton">Send</button>
+      </div>
+    </div>
+
+    <div id="net-select">
+      <div class="net-radio">
+        <input class="net-radio-input" name="network" type="radio" checked="" id="checkid1" value="testnet-11" />
+        <label class="net-radio-label" for="checkid1">Testnet</label>
+      </div>
+      <div class="net-radio">
+        <input class="net-radio-input" name="network" type="radio" id="checkid2" value="mainnet" />
+        <label class="net-radio-label" for="checkid2">Mainnet</label>
+      </div>
+      <label for="network" hidden>Selected Network:</label>
+      <!-- <select id="network" hidden>
+        <option value="testnet-11">Testnet</option>
+        <option value="mainnet">Mainnet</option>
+      </select> -->
     </div>
 
     <!-- Modal structure -->
     <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="close-modal">&times;</span>
-            <h2 id="modal-title"></h2>
-            <p id="modal-content"></p>
-        </div>
+      <div class="modal-content">
+        <button class="close-button" id="close-modal">&times;</button>
+        <h2 id="modal-title"></h2>
+        <p id="modal-content"></p>
+        <input id="modal-input" type="password">
+        <button class="modal-button" id="modal-accept">Confirm</button>
+        <button class="modal-button btn-normal" id="modal-reject">Cancel</button>
+      </div>
     </div>
-
+  </div>
 </body>
+
 </html>

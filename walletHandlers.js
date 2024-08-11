@@ -70,11 +70,18 @@ async function handleMnemonicInput(mnemonicInput, screenWallet) {
         return;
     }
 
-    const password = prompt("Enter a password to encrypt your seed:");
+    /**
+     * Roni
+     */
+    const password = await showPromptModal('Enter a password to encrypt your seed:');
+    if (password === null) {
+        return;
+    }
+    /* const password = prompt("Enter a password to encrypt your seed:");
     if (!password) {
         showToast("Password is required!", "error");
         return;
-    }
+    } */
 
     await handleSeedProcess(mnemonicInput, password, screenWallet);
 }
@@ -88,11 +95,18 @@ export async function resetWallet(screenWallet) {
 export async function confirmMnemonic(screenWallet) {
     const confirmMnemonicInput = document.getElementById('confirmMnemonic').value.trim();
     if (mnemonic && confirmMnemonicInput === mnemonic.phrase) {
-        const password = prompt("Enter a password to encrypt your seed:");
+        /**
+         * Roni
+         */
+        const password = await showPromptModal('Enter a password to encrypt your seed:');
+        if (password === null) {
+            return;
+        }
+        /* const password = prompt("Enter a password to encrypt your seed:");
         if (!password) {
             showToast("Password is required!", "error");
             return;
-        }
+        } */
         await handleSeedProcess(mnemonic.phrase, password, screenWallet);
     } else {
         showToast("The mnemonic does not match. Please try again.", "error");
@@ -107,11 +121,19 @@ export async function importWallet(screenWallet) {
 
 export async function exportWalletSeed() {
     try {
-        const password = prompt("Enter your wallet password:");
+        /**
+         * Roni
+         */
+        const password = await showPromptModal('Enter your wallet password:');
+        if (password === null) {
+            return;
+        }
+        /* const password = prompt("Enter your wallet password:");
         if (!password) {
             showToast("Password is required!", "error");
             return;
-        }
+        } */
+
         const encryptedSeed = JSON.parse(localStorage.getItem('encryptedSeed'));
         const seed = await decryptData(password, encryptedSeed);
         showModal("Your wallet seed", seed);
